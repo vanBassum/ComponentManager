@@ -1,0 +1,77 @@
+﻿@page "/transistors"
+@using ComponentManager.Shared
+@inject HttpClient Http
+
+<PageTitle>Transistors</PageTitle>
+
+<Part Title="Transistors"> 
+    
+
+
+
+    
+@if (Transitors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Transitors)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+
+
+
+
+
+</Part>
+
+
+
+@code {
+
+    private Transistor[]? Transitors { get; set; } = new Transistor[] { 
+        new Transistor { Name = "BC547" },
+        new Transistor { Name = "BC546" },
+        new Transistor { Name = "BC545" }
+    
+    };
+
+
+    //private WeatherForecast[]? forecasts;
+    //
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+    //}
+
+
+
+
+
+
+
+}
+

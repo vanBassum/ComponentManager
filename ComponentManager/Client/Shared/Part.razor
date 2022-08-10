@@ -1,0 +1,58 @@
+﻿<div class ="row">
+    <div class="col">
+        <strong>@Title</strong>
+    </div> 
+    <div class="col">
+        
+    </div> 
+    <div class="col">
+
+
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="Search">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button">Search</button>
+          </div>
+        </div>
+    </div> 
+</div>
+
+<div class ="row">
+    <div class="container">
+        @ChildContent
+    </div>
+</div>
+
+
+<div class ="row">
+    <div class="col">
+        <button type="button" class="btn btn-light">New @Title.ToLower()</button>
+    </div> 
+    <div class="col">
+        
+    </div> 
+    <div class="col">
+
+
+
+        <Paging CurrentPage=CurrentPage
+                PageCount=PageCount
+                MaxPages=5/>
+    </div> 
+</div>
+
+
+
+@code {
+    // Demonstrates how a parent component can supply parameters
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public int CurrentPage { get; set; } = 14;
+    public int PageCount { get; set; } = 20;
+}
+
+
