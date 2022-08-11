@@ -1,16 +1,20 @@
 ﻿@page "/transistors"
 @using ComponentManager.Shared
+@using System.Text.Json
+@using System.Text
 @inject HttpClient Http
 
 <PageTitle>Transistors</PageTitle>
 
-<Part Title="Transistors"> 
+<Part Title="Transistors"
+      Paging=TransistorList
+      OnPageRequested="(a)=>RequestPage(a)"> 
     
 
 
 
     
-@if (Transitors == null)
+@if (TransistorList == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -26,10 +30,10 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Transitors)
+            @foreach (var item in TransistorList.Data)
             {
                 <tr>
-                    <td>@item.Name</td>
+                    <td>@item</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -52,12 +56,43 @@ else
 
 @code {
 
-    private Transistor[]? Transitors { get; set; } = new Transistor[] { 
-        new Transistor { Name = "BC547" },
-        new Transistor { Name = "BC546" },
-        new Transistor { Name = "BC545" }
-    
-    };
+    private PagingInfo<string> TransistorList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //var request = new HttpRequestMessage(HttpMethod.Get, "Transistor");
+        //var body = new { Page=1, Size=5 };
+        //request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+        //using var response = await HttpClient.SendAsync(request);
+        //Transitors =  await response.Content.ReadFromJsonAsync<Transistor[]>();
+
+
+        TransistorList = await Http.GetFromJsonAsync<PagingInfo<string>>("Transistor");
+
+    }
+
+
+    protected async Task RequestPage(int page)
+    {
+        PagingInfo paging = TransistorList;
+        paging.CurrentPage = page;
+
+        HttpClient client = new HttpClient();
+        var json = JsonSerializer.Serialize(paging);
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri("Transistor"),
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+ 
+        var response = client.SendAsync(request).ConfigureAwait(false);
+        var responseInfo = response.GetAwaiter().GetResult();
+
+
+        string arg = JsonSerializer.Serialize(paging);
+        TransistorList = await Http.GetFromJsonAsync<PagingInfo<string>>($"Transistor/{arg}");
+    }
 
 
     //private WeatherForecast[]? forecasts;

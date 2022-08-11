@@ -1,4 +1,5 @@
-﻿<div class ="row">
+﻿@using ComponentManager.Shared
+<div class ="row">
     <div class="col">
         <strong>@Title</strong>
     </div> 
@@ -32,12 +33,10 @@
         
     </div> 
     <div class="col">
-
-
-
-        <Paging CurrentPage=CurrentPage
-                PageCount=PageCount
-                MaxPages=5/>
+        <Paging CurrentPage=Paging.CurrentPage
+                PageCount=Paging.TotalPages
+                MaxPages=5
+                OnPageRequested=OnPageRequested/>
     </div> 
 </div>
 
@@ -51,8 +50,14 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
-    public int CurrentPage { get; set; } = 14;
-    public int PageCount { get; set; } = 20;
+    [Parameter]
+    public PagingInfo Paging { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageRequested { get; set; }
+
+    //public int CurrentPage { get; set; } = 14;
+    //public int PageCount { get; set; } = 20;
 }
 
 
