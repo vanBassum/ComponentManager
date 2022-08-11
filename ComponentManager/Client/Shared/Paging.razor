@@ -29,6 +29,13 @@
             </a>
         </li>
     </ul>
+
+    <select class="form-select" @onchange="(e)=>RequestPageSize(int.Parse(e.Value.ToString()))">
+        <option value="10" >10</option>
+        <option value="25" >25</option>
+        <option value="50" >50</option>
+        <option value="100">100</option>
+    </select>
 </nav>
 
 
@@ -40,11 +47,11 @@
     [Parameter]
     public int MaxPages { get; set; } = 5;
 
-
-
-
     [Parameter]
     public EventCallback<int> OnPageRequested { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageSizeRequested { get; set; }
 
     private int first = 0;
     private int count = 5;
@@ -68,6 +75,10 @@
         await OnPageRequested.InvokeAsync(page);
     }
 
+    protected async Task RequestPageSize(int size)
+    {
+        await OnPageSizeRequested.InvokeAsync(size);
+    }
 }
 
 

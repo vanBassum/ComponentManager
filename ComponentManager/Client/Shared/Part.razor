@@ -7,7 +7,7 @@
         
     </div> 
     <div class="col">
-        <input class="form-control justify-content-end" type="text"  placeholder="Search" aria-label="Search" aria-describedby="Search"  @oninput="OnSearchChanged"/>
+        <input class="form-control justify-content-end search" type="text"  placeholder="Search" aria-label="Search" aria-describedby="Search"  @oninput="OnSearchChanged"/>
     </div> 
 </div>
 
@@ -34,7 +34,8 @@
     </div> 
     <div class="col">
         <Paging PagingInfo=Paging
-                OnPageRequested=OnPageRequested/>
+                OnPageRequested=OnPageRequested
+                OnPageSizeRequested=OnPageSizeRequested/>
     </div> 
 </div>
 
@@ -53,6 +54,9 @@
 
     [Parameter]
     public EventCallback<int> OnPageRequested { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageSizeRequested { get; set; }
 
     [Parameter]
     public string Search { get; set; } = "";

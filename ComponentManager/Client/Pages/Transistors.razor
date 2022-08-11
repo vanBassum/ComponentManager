@@ -12,7 +12,8 @@
       Paging=TransistorList
       Search=Search
       SearchChanged=OnSearch
-      OnPageRequested=RequestPage>
+      OnPageRequested=RequestPage
+      OnPageSizeRequested=RequestPageSize>
     
 
 
@@ -83,6 +84,13 @@ else
         if (Sort == value)
             Descending = !Descending;
         Sort = value;
+        await GetData();
+    }
+
+
+    protected async Task RequestPageSize(int size)
+    {
+        Size = size;
         await GetData();
     }
 
