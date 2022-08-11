@@ -20,7 +20,7 @@ namespace ComponentManager.Shared
 
         }
 
-        public static PagingInfo<T> Create(IEnumerable<T> data, int page, int size)
+        public static PagingInfo<T> Create(IQueryable<T> data, int page, int size)
         {
             int total = data.Count();
             if (page < 0)
