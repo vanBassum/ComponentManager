@@ -1,27 +1,29 @@
-﻿
+﻿@using ComponentManager.Shared
+
 
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-end">
         <li class="page-item">
-            <a class="page-link" aria-label="Previous" @onclick="()=>RequestPage(CurrentPage-1)">
+            <a class="page-link" aria-label="Previous" @onclick="()=>RequestPage(PagingInfo.CurrentPage-1)">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
 
-        @for(int i=first; i<last; i++)
+        @for(int i=0; i<count; i++)
         {
-            @if(i == CurrentPage)
+            var pageNo = i + first;
+            @if(pageNo == PagingInfo.CurrentPage)
             {
-                <li class="page-item active"><a class="page-link" @onclick="()=>RequestPage(i)">@i.ToString()</a></li>
+                <li class="page-item active"><a class="page-link" @onclick="()=>RequestPage(pageNo)">@pageNo.ToString()</a></li>
             }
             else
             {
-                <li class="page-item"><a class="page-link" @onclick="()=>RequestPage(i)">@i.ToString()</a></li>
+                <li class="page-item"><a class="page-link" @onclick="()=>RequestPage(pageNo)">@pageNo.ToString()</a></li>
             }
         }
 
         <li class="page-item">
-            <a class="page-link" aria-label="Next" @onclick="()=>RequestPage(CurrentPage+1)">
+            <a class="page-link" aria-label="Next" @onclick="()=>RequestPage(PagingInfo.CurrentPage+1)">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
@@ -32,27 +34,30 @@
 
 @code {
     [Parameter]
-    public int CurrentPage { get; set; } = 1;
-
-    [Parameter]
-    public int PageCount { get; set; } = 10;
+    public PagingInfo PagingInfo { get; set; }
 
     [Parameter]
     public int MaxPages { get; set; } = 5;
 
+
+
+
     [Parameter]
     public EventCallback<int> OnPageRequested { get; set; }
 
-
     private int first = 1;
-    private int last = 1;
+    private int count = 5;
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        first = CurrentPage - MaxPages/2;
+        first = PagingInfo.CurrentPage - MaxPages/2;
+        count = Math.Min(MaxPages, PagingInfo.TotalPages);
+
         if (first < 1)
             first = 1;
-        last = first + MaxPages;
+
+        if (first + count > PagingInfo.TotalPages)
+            first = PagingInfo.TotalPages - count;
     }
 
     protected async Task RequestPage(int page)

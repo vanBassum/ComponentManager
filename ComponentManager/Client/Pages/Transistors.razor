@@ -2,6 +2,8 @@
 @using ComponentManager.Shared
 @using System.Text.Json
 @using System.Text
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager NavManager
 @inject HttpClient Http
 
 <PageTitle>Transistors</PageTitle>
@@ -60,52 +62,27 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        //var request = new HttpRequestMessage(HttpMethod.Get, "Transistor");
-        //var body = new { Page=1, Size=5 };
-        //request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
-        //using var response = await HttpClient.SendAsync(request);
-        //Transitors =  await response.Content.ReadFromJsonAsync<Transistor[]>();
-
-
-        TransistorList = await Http.GetFromJsonAsync<PagingInfo<string>>("Transistor");
+        var queryParams = new Dictionary<string, string>
+        {
+            ["page"] = "1",
+            ["size"] = "10"
+        };
+        var uri = QueryHelpers.AddQueryString("Transistor", queryParams);
+        TransistorList = await Http.GetFromJsonAsync<PagingInfo<string>>(uri);
 
     }
 
 
     protected async Task RequestPage(int page)
     {
-        PagingInfo paging = TransistorList;
-        paging.CurrentPage = page;
-
-        HttpClient client = new HttpClient();
-        var json = JsonSerializer.Serialize(paging);
-        var request = new HttpRequestMessage
+        var queryParams = new Dictionary<string, string>
         {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri("Transistor"),
-            Content = new StringContent(json, Encoding.UTF8, "application/json")
+            ["page"] = page.ToString(),
+            ["size"] = TransistorList.PageSize.ToString()
         };
- 
-        var response = client.SendAsync(request).ConfigureAwait(false);
-        var responseInfo = response.GetAwaiter().GetResult();
-
-
-        string arg = JsonSerializer.Serialize(paging);
-        TransistorList = await Http.GetFromJsonAsync<PagingInfo<string>>($"Transistor/{arg}");
+        var uri = QueryHelpers.AddQueryString("Transistor", queryParams);
+        TransistorList = await Http.GetFromJsonAsync<PagingInfo<string>>(uri);
     }
-
-
-    //private WeatherForecast[]? forecasts;
-    //
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
-    //}
-
-
-
-
-
 
 
 }

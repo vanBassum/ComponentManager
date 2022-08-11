@@ -19,20 +19,14 @@ namespace ComponentManager.Server.Controllers
             _logger = logger;
         }
 
-        public PagingInfo<string> Get([FromBody] PagingInfo? paging)
+        public PagingInfo<string> Get(int? page, int? size)
         {
-            var page = paging?.CurrentPage ?? 1;
-            var size = paging?.CurrentPage ?? 10;
-            var result = PagingInfo<string>.Create(Data, page, size);
+            page ??= 1;
+            size ??= 10;
+            var result = PagingInfo<string>.Create(Data, page.Value, size.Value);
             return result;
         }
 
-        public PagingInfo<string> Get()
-        {
-            var page = 1;
-            var size = 10;
-            var result = PagingInfo<string>.Create(Data, page, size);
-            return result;
-        }
+
     }
 }
