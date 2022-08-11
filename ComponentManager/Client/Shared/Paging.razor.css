@@ -1,5 +1,13 @@
 ﻿
 
 .page-item {
-    min-width: 64px;
+    min-width: 43px;
+}
+
+.page-link {
+    text-align: center;
+}
+
+.form-select {
+    width: 100px;
 }
