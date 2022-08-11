@@ -14,7 +14,7 @@ namespace ComponentManager.Server.Controllers
             _logger = logger;
         }
 
-        public PagingInfo<Transistor> Get(int? page, int? size, string? filter)
+        public PagingInfo<Transistor> Get(int? page, int? size, string? filter, string? sort, bool? desc)
         {
             page ??= 0;
             size ??= 10;
@@ -22,6 +22,11 @@ namespace ComponentManager.Server.Controllers
             var data = DB;
             if (filter != null)
                 data = data.Where(a => a.Name.ToLower().Contains(filter.ToLower()));
+
+            if (sort != null)
+                data = data.OrderDynamic(sort, desc??false);
+            
+               
             var result = PagingInfo<Transistor>.Create(data, page.Value, size.Value);
             return result;
         }

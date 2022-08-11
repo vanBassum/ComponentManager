@@ -24,11 +24,11 @@
 }
 else
 {
-    <table class="table">
+    <table class="table table-striped" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>U<sub>max</sub></th>
+                <th @onclick='()=>OnSort("Name")'>Name</th>
+                <th @onclick='()=>OnSort("UMax")'>U<sub>max</sub></th>
                 <th></th>
                 <th></th>
             </tr>
@@ -58,6 +58,8 @@ else
     private string Search { get; set; } = "";
     private int Page { get; set; } = 0;
     private int Size { get; set; } = 10;
+    private string Sort { get; set; } = "";
+    private bool Descending { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,6 +78,14 @@ else
         await GetData();
     }
 
+    private async Task OnSort(string value)  
+    {
+        if (Sort == value)
+            Descending = !Descending;
+        Sort = value;
+        await GetData();
+    }
+
 
     private async Task GetData()  
     {
@@ -83,6 +93,8 @@ else
         {
             ["page"] = Page.ToString(),
             ["size"] = Size.ToString(),
+            ["sort"] = Sort.ToString(),
+            ["desc"] = Descending.ToString(),
             ["filter"] = Search
         };
         var uri = QueryHelpers.AddQueryString("Transistor", queryParams);
