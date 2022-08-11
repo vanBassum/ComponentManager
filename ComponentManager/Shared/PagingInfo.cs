@@ -20,13 +20,18 @@ namespace ComponentManager.Shared
 
         }
 
-        public static PagingInfo<T> Create(IEnumerable<T> data, int currentPage, int pageSize)
+        public static PagingInfo<T> Create(IEnumerable<T> data, int page, int size)
         {
+            int total = data.Count();
+            if (page < 0)
+                page = 0;
+            if(page * size > total)
+                page = total / size;
             PagingInfo<T> response = new PagingInfo<T>();
-            response.CurrentPage = currentPage;
-            response.PageSize = pageSize;
-            response.TotalPages = (data.Count() + pageSize - 1) / pageSize;
-            response.Data = data.Skip(currentPage * pageSize).Take(pageSize).ToArray();
+            response.CurrentPage = page;
+            response.PageSize = size;
+            response.TotalPages = (total + size - 1) / size;
+            response.Data = data.Skip(page * size).Take(size).ToArray();
             return response;
         }
     }

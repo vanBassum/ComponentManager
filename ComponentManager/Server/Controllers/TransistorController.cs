@@ -7,11 +7,6 @@ namespace ComponentManager.Server.Controllers
     [Route("[controller]")]
     public class TransistorController : ControllerBase
     {
-        private static readonly IEnumerable<string> Data = new[]
-        {
-            "BC107", "BC107A", "BC107B", "BC108", "BC108A", "BC108B", "BC108C", "BC109A", "BC109B", "BC109C", "BC140", "BC140-6", "BC140-10", "BC140-16", "BC141", "BC141-6", "BC141-10", "BC141-16", "BC160", "BC160-6", "BC160-10", "BC160-16", "BC161", "BC161-6", "BC161-10", "BC161-16", "BC177", "BC177A", "BC177B", "BC178", "BC178A", "BC178B", "BC178C", "BC179", "BC179B", "BC179C", "BC414", "BC414B", "BC414C", "BC416", "BC416B", "BC416C", "BC546", "BC546A", "BC546B", "BC547", "BC547A", "BC547B", "BC548", "BC548A", "BC548B", "BC548C", "BC549", "BC549B", "BC549C", "BC550", "BC550B", "BC550C", "BC556", "BC556A", "BC556B", "BC557", "BC557A", "BC557B", "BC558", "BC558A", "BC558B", "BC558C", "BC559", "BC559B", "BC559C", "BC560", "BC560B", "BC560C", "BD135", "BD135-6", "BD135-10", "BD135-16", "BD136", "BD136-6", "BD136-10", "BD136-16", "BD137", "BD137-6", "BD137-10", "BD138", "BD138-6", "BD138-10", "BD139", "BD139-6", "BD139-10", "BD140", "BD140-6", "BD140-10", "BD233", "BD234", "BD235", "BD236", "BD237", "BD238", "BD239", "BD239A", "BD239B", "BD239C", "BD240", "BD240A", "BD240B", "BD240C", "BD241", "BD241A", "BD241B", "BD241C", "BD242", "BD242A", "BD242B", "BD242C", "BD243", "BD243A", "BD243B", "BD243C", "BD244", "BD244A", "BD244B", "BD244C", "BD245", "BD245A", "BD245B", "BD245C", "BD246", "BD246A", "BD246B", "BD246C", "BD249", "BD249A", "BD249B", "BD249C", "BD250", "BD250A", "BD250B", "BD250C", "BD379", "BD380", "MJ2955", "MJE2955", "MJE3055", "2N3055"
-        };
-
         private readonly ILogger<WeatherForecastController> _logger;
 
         public TransistorController(ILogger<WeatherForecastController> logger)
@@ -19,14 +14,171 @@ namespace ComponentManager.Server.Controllers
             _logger = logger;
         }
 
-        public PagingInfo<string> Get(int? page, int? size)
+        public PagingInfo<Transistor> Get(int? page, int? size, string? filter)
         {
-            page ??= 1;
+            page ??= 0;
             size ??= 10;
-            var result = PagingInfo<string>.Create(Data, page.Value, size.Value);
+
+            var data = DB;
+            if (filter != null)
+                data = data.Where(a => a.Name.ToLower().Contains(filter.ToLower()));
+            var result = PagingInfo<Transistor>.Create(data, page.Value, size.Value);
             return result;
         }
 
 
+
+
+
+
+        private static readonly IEnumerable<Transistor> DB = new[]
+        {
+            new Transistor{Name = "BC107", UMax = 45 },
+new Transistor{Name = "BC107A", UMax = 45 },
+new Transistor{Name = "BC107B", UMax = 45 },
+new Transistor{Name = "BC108", UMax = 20 },
+new Transistor{Name = "BC108A", UMax = 20 },
+new Transistor{Name = "BC108B", UMax = 20 },
+new Transistor{Name = "BC108C", UMax = 20 },
+new Transistor{Name = "BC109A", UMax = 20 },
+new Transistor{Name = "BC109B", UMax = 20 },
+new Transistor{Name = "BC109C", UMax = 20 },
+new Transistor{Name = "BC140", UMax = 40 },
+new Transistor{Name = "BC140-6", UMax = 40 },
+new Transistor{Name = "BC140-10", UMax = 40 },
+new Transistor{Name = "BC140-16", UMax = 40 },
+new Transistor{Name = "BC141", UMax = 60 },
+new Transistor{Name = "BC141-6", UMax = 60 },
+new Transistor{Name = "BC141-10", UMax = 60 },
+new Transistor{Name = "BC141-16", UMax = 60 },
+new Transistor{Name = "BC160", UMax = 40 },
+new Transistor{Name = "BC160-6", UMax = 40 },
+new Transistor{Name = "BC160-10", UMax = 40 },
+new Transistor{Name = "BC160-16", UMax = 40 },
+new Transistor{Name = "BC161", UMax = 60 },
+new Transistor{Name = "BC161-6", UMax = 60 },
+new Transistor{Name = "BC161-10", UMax = 60 },
+new Transistor{Name = "BC161-16", UMax = 60 },
+new Transistor{Name = "BC177", UMax = 45 },
+new Transistor{Name = "BC177A", UMax = 45 },
+new Transistor{Name = "BC177B", UMax = 45 },
+new Transistor{Name = "BC178", UMax = 25 },
+new Transistor{Name = "BC178A", UMax = 25 },
+new Transistor{Name = "BC178B", UMax = 25 },
+new Transistor{Name = "BC178C", UMax = 25 },
+new Transistor{Name = "BC179", UMax = 20 },
+new Transistor{Name = "BC179B", UMax = 20 },
+new Transistor{Name = "BC179C", UMax = 20 },
+new Transistor{Name = "BC414", UMax = 45 },
+new Transistor{Name = "BC414B", UMax = 45 },
+new Transistor{Name = "BC414C", UMax = 45 },
+new Transistor{Name = "BC416", UMax = 45 },
+new Transistor{Name = "BC416B", UMax = 45 },
+new Transistor{Name = "BC416C", UMax = 45 },
+new Transistor{Name = "BC546", UMax = 65 },
+new Transistor{Name = "BC546A", UMax = 65 },
+new Transistor{Name = "BC546B", UMax = 65 },
+new Transistor{Name = "BC547", UMax = 45 },
+new Transistor{Name = "BC547A", UMax = 45 },
+new Transistor{Name = "BC547B", UMax = 45 },
+new Transistor{Name = "BC548", UMax = 30 },
+new Transistor{Name = "BC548A", UMax = 30 },
+new Transistor{Name = "BC548B", UMax = 30 },
+new Transistor{Name = "BC548C", UMax = 30 },
+new Transistor{Name = "BC549", UMax = 30 },
+new Transistor{Name = "BC549B", UMax = 30 },
+new Transistor{Name = "BC549C", UMax = 30 },
+new Transistor{Name = "BC550", UMax = 45 },
+new Transistor{Name = "BC550B", UMax = 45 },
+new Transistor{Name = "BC550C", UMax = 45 },
+new Transistor{Name = "BC556", UMax = 65 },
+new Transistor{Name = "BC556A", UMax = 65 },
+new Transistor{Name = "BC556B", UMax = 65 },
+new Transistor{Name = "BC557", UMax = 45 },
+new Transistor{Name = "BC557A", UMax = 45 },
+new Transistor{Name = "BC557B", UMax = 45 },
+new Transistor{Name = "BC558", UMax = 30 },
+new Transistor{Name = "BC558A", UMax = 30 },
+new Transistor{Name = "BC558B", UMax = 30 },
+new Transistor{Name = "BC558C", UMax = 30 },
+new Transistor{Name = "BC559", UMax = 30 },
+new Transistor{Name = "BC559B", UMax = 30 },
+new Transistor{Name = "BC559C", UMax = 30 },
+new Transistor{Name = "BC560", UMax = 45 },
+new Transistor{Name = "BC560B", UMax = 45 },
+new Transistor{Name = "BC560C", UMax = 45 },
+new Transistor{Name = "BD135", UMax = 45 },
+new Transistor{Name = "BD135-6", UMax = 45 },
+new Transistor{Name = "BD135-10", UMax = 45 },
+new Transistor{Name = "BD135-16", UMax = 45 },
+new Transistor{Name = "BD136", UMax = 45 },
+new Transistor{Name = "BD136-6", UMax = 45 },
+new Transistor{Name = "BD136-10", UMax = 45 },
+new Transistor{Name = "BD136-16", UMax = 45 },
+new Transistor{Name = "BD137", UMax = 60 },
+new Transistor{Name = "BD137-6", UMax = 60 },
+new Transistor{Name = "BD137-10", UMax = 60 },
+new Transistor{Name = "BD138", UMax = 60 },
+new Transistor{Name = "BD138-6", UMax = 60 },
+new Transistor{Name = "BD138-10", UMax = 60 },
+new Transistor{Name = "BD139", UMax = 80 },
+new Transistor{Name = "BD139-6", UMax = 80 },
+new Transistor{Name = "BD139-10", UMax = 80 },
+new Transistor{Name = "BD140", UMax = 80 },
+new Transistor{Name = "BD140-6", UMax = 80 },
+new Transistor{Name = "BD140-10", UMax = 80 },
+new Transistor{Name = "BD233", UMax = 45 },
+new Transistor{Name = "BD234", UMax = 45 },
+new Transistor{Name = "BD235", UMax = 60 },
+new Transistor{Name = "BD236", UMax = 60 },
+new Transistor{Name = "BD237", UMax = 80 },
+new Transistor{Name = "BD238", UMax = 80 },
+new Transistor{Name = "BD239", UMax = 45 },
+new Transistor{Name = "BD239A", UMax = 60 },
+new Transistor{Name = "BD239B", UMax = 80 },
+new Transistor{Name = "BD239C", UMax = 100 },
+new Transistor{Name = "BD240", UMax = 45 },
+new Transistor{Name = "BD240A", UMax = 60 },
+new Transistor{Name = "BD240B", UMax = 80 },
+new Transistor{Name = "BD240C", UMax = 100 },
+new Transistor{Name = "BD241", UMax = 45 },
+new Transistor{Name = "BD241A", UMax = 60 },
+new Transistor{Name = "BD241B", UMax = 80 },
+new Transistor{Name = "BD241C", UMax = 100 },
+new Transistor{Name = "BD242", UMax = 45 },
+new Transistor{Name = "BD242A", UMax = 60 },
+new Transistor{Name = "BD242B", UMax = 80 },
+new Transistor{Name = "BD242C", UMax = 100 },
+new Transistor{Name = "BD243", UMax = 45 },
+new Transistor{Name = "BD243A", UMax = 60 },
+new Transistor{Name = "BD243B", UMax = 80 },
+new Transistor{Name = "BD243C", UMax = 100 },
+new Transistor{Name = "BD244", UMax = 45 },
+new Transistor{Name = "BD244A", UMax = 60 },
+new Transistor{Name = "BD244B", UMax = 80 },
+new Transistor{Name = "BD244C", UMax = 100 },
+new Transistor{Name = "BD245", UMax = 45 },
+new Transistor{Name = "BD245A", UMax = 60 },
+new Transistor{Name = "BD245B", UMax = 80 },
+new Transistor{Name = "BD245C", UMax = 100 },
+new Transistor{Name = "BD246", UMax = 45 },
+new Transistor{Name = "BD246A", UMax = 60 },
+new Transistor{Name = "BD246B", UMax = 80 },
+new Transistor{Name = "BD246C", UMax = 100 },
+new Transistor{Name = "BD249", UMax = 45 },
+new Transistor{Name = "BD249A", UMax = 60 },
+new Transistor{Name = "BD249B", UMax = 80 },
+new Transistor{Name = "BD249C", UMax = 100 },
+new Transistor{Name = "BD250", UMax = 45 },
+new Transistor{Name = "BD250A", UMax = 60 },
+new Transistor{Name = "BD250B", UMax = 80 },
+new Transistor{Name = "BD250C", UMax = 100 },
+new Transistor{Name = "BD379", UMax = 80 },
+new Transistor{Name = "BD380", UMax = 80 },
+new Transistor{Name = "MJ2955", UMax = 60 },
+new Transistor{Name = "MJE2955", UMax = 60 },
+new Transistor{Name = "MJE3055", UMax = 60 },
+new Transistor{Name = "2N3055", UMax = 60 },
+        };
     }
 }

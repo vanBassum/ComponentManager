@@ -10,7 +10,9 @@
 
 <Part Title="Transistors"
       Paging=TransistorList
-      OnPageRequested="(a)=>RequestPage(a)"> 
+      Search=Search
+      SearchChanged=OnSearch
+      OnPageRequested=RequestPage>
     
 
 
@@ -26,7 +28,7 @@ else
         <thead>
             <tr>
                 <th>Name</th>
-                <th></th>
+                <th>U<sub>max</sub></th>
                 <th></th>
                 <th></th>
             </tr>
@@ -35,8 +37,8 @@ else
             @foreach (var item in TransistorList.Data)
             {
                 <tr>
-                    <td>@item</td>
-                    <td></td>
+                    <td>@item.Name</td>
+                    <td>@item.UMax V</td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -45,45 +47,47 @@ else
     </table>
 }
 
-
-
-
-
-
-
-
 </Part>
 
 
 
 @code {
 
-    private PagingInfo<string> TransistorList { get; set; }
+    private PagingInfo<Transistor>? TransistorList { get; set; }
+
+    private string Search { get; set; } = "";
+    private int Page { get; set; } = 0;
+    private int Size { get; set; } = 10;
 
     protected override async Task OnInitializedAsync()
     {
-        var queryParams = new Dictionary<string, string>
-        {
-            ["page"] = "1",
-            ["size"] = "10"
-        };
-        var uri = QueryHelpers.AddQueryString("Transistor", queryParams);
-        TransistorList = await Http.GetFromJsonAsync<PagingInfo<string>>(uri);
-
+        await GetData();
     }
-
 
     protected async Task RequestPage(int page)
     {
-        var queryParams = new Dictionary<string, string>
-        {
-            ["page"] = page.ToString(),
-            ["size"] = TransistorList.PageSize.ToString()
-        };
-        var uri = QueryHelpers.AddQueryString("Transistor", queryParams);
-        TransistorList = await Http.GetFromJsonAsync<PagingInfo<string>>(uri);
+        Page = page;
+        await GetData();
     }
 
+    private async Task OnSearch(string value)  
+    {
+        Search = value;
+        await GetData();
+    }
+
+
+    private async Task GetData()  
+    {
+        var queryParams = new Dictionary<string, string>
+        {
+            ["page"] = Page.ToString(),
+            ["size"] = Size.ToString(),
+            ["filter"] = Search
+        };
+        var uri = QueryHelpers.AddQueryString("Transistor", queryParams);
+        TransistorList = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
+    }
 
 }
 

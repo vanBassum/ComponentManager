@@ -7,10 +7,8 @@
         
     </div> 
     <div class="col">
-
-
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="Search">
+          <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="Search" value="@Search" @oninput="OnSearchChanged"/>
           <div class="input-group-append">
             <button class="btn btn-outline-secondary" type="button">Search</button>
           </div>
@@ -20,8 +18,15 @@
 
 <div class ="row">
     <div class="container">
-        @ChildContent
-    </div>
+        @if (ChildContent == null) 
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            @ChildContent
+        }
+        </div>
 </div>
 
 
@@ -46,16 +51,25 @@
     public string? Title { get; set; }
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public PagingInfo Paging { get; set; }
+    public PagingInfo? Paging { get; set; }
 
     [Parameter]
     public EventCallback<int> OnPageRequested { get; set; }
 
-    //public int CurrentPage { get; set; } = 14;
-    //public int PageCount { get; set; } = 20;
+    [Parameter]
+    public string Search { get; set; } = "";
+
+    [Parameter]  
+    public EventCallback<string> SearchChanged { get; set; }  
+
+    private Task OnSearchChanged(ChangeEventArgs e)  
+    {  
+        Search = e?.Value?.ToString() ?? "";  
+        return SearchChanged.InvokeAsync(Search);  
+    }
 }
 
 
