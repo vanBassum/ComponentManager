@@ -10,14 +10,14 @@
       Items="Items"
       OnLoad=LoadData>
     
-    <TableHeader>
-        <th>Name</th>
-        <th>U<sub>max</sub></th>
+    <TableHeader Context="table">
+        <th @onclick='()=>table.Sort("Name")'>Name</th>
+        <th @onclick='()=>table.Sort("UMax")'>U<sub>max</sub></th>
     </TableHeader>
 
-    <RowTemplate>
-        <td>@context.Name</td>
-        <td>@context.UMax</td>
+    <RowTemplate Context="tor">
+        <td>@tor.Name</td>
+        <td>@tor.UMax</td>
     </RowTemplate>
 
 </Part>
