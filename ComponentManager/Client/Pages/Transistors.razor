@@ -13,21 +13,23 @@
     <TableHeader Context="table">
         <th @onclick='()=>table.Sort("Name")'>Name</th>
         <th @onclick='()=>table.Sort("UMax")'>U<sub>max</sub></th>
+        <th></th>
     </TableHeader>
 
     <RowTemplate Context="tor">
         <td>@tor.Name</td>
         <td>@tor.UMax</td>
+        <td><button type="button" class="btn btn-primary" @onclick="() => EditComponent(tor)">Edit</button></td>
     </RowTemplate>
 
     <EditTemplate>
         <Modal @ref="Modal">
             <div class="modal-header">
-                @EditTransistor.Name;
+                @EditTransistor.Name
             </div>
             <div class="modal-body">
-                <input @bind="EditTransistor.Name"/>
-                <input @bind="EditTransistor.UMax"/>
+                <EasyInput Name="Name" Item="EditTransistor.Name"/>
+                <EasyInput Name="Umax" Item="EditTransistor.UMax"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" @onclick="() => EditModalSave()">Save changes</button>
@@ -35,7 +37,7 @@
             </div>
         </Modal>
 
-        <button type="button" class="btn btn-primary" @onclick="() => Modal.Open()">Open Modal</button>
+        <button type="button" class="btn btn-primary" @onclick="() => CreateComponent()">Open Modal</button>
 
     </EditTemplate>
 </Part>
@@ -46,7 +48,7 @@
     private Modal Modal { get; set; }
     private PagingInfo PagingInfo { get; set; }
     private Transistor[] Items { get; set; }
-    private Transistor EditTransistor { get; set; } = new Transistor();
+    private Transistor EditTransistor { get; set; } = new Transistor() { Name = "" };
 
     protected async Task LoadData(string uri)
     {
@@ -55,8 +57,24 @@
         Items = response.Data;
     }
 
+    private async Task CreateComponent()
+    {
+        EditTransistor = new Transistor() 
+        { 
+            Name = "New transistor" 
+        };
+        Modal.Open();
+    }
+
+    private async Task EditComponent(Transistor tor)
+    {
+        EditTransistor = tor;
+        Modal.Open();
+    }
+
     private async Task EditModalSave()
     {
+        //Save
         Modal.Close();
     }
 
@@ -64,5 +82,6 @@
     {
         Modal.Close();
     }
+
 }
 
