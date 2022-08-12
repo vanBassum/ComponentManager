@@ -1,5 +1,6 @@
 ﻿@page "/transistors"
 @using ComponentManager.Shared
+@using Microsoft.AspNetCore.WebUtilities
 @inject HttpClient Http
 
 <PageTitle>Transistors</PageTitle>
@@ -12,7 +13,7 @@
     
     <TableHeader Context="table">
         <th @onclick='()=>table.Sort("Name")'>Name</th>
-        <th @onclick='()=>table.Sort("UMax")'>U<sub>max</sub></th>
+        <th @onclick='()=>table.Sort("UMax")'>U<sub>Max</sub></th>
         <th></th>
     </TableHeader>
 
@@ -28,17 +29,26 @@
                 @EditTransistor.Name
             </div>
             <div class="modal-body">
-                <EasyInput Name="Name" Item="EditTransistor.Name"/>
-                <EasyInput Name="Umax" Item="EditTransistor.UMax"/>
+                <div class="form-group">
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><h6>Name</h6></div>
+                        <div class="col-sm-9"><input class="form-control" @bind="EditTransistor.Name" /></div>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><h6>U<sub>Max</sub></h6></div>
+                        <div class="col-sm-9"><input class="form-control" @bind="EditTransistor.UMax" /></div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" @onclick="() => EditModalDelete()">Delete</button>
                 <button type="button" class="btn btn-primary" @onclick="() => EditModalSave()">Save changes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => EditModalCancel()">Close</button>
             </div>
         </Modal>
-
-        <button type="button" class="btn btn-primary" @onclick="() => CreateComponent()">Open Modal</button>
-
+        <button type="button" class="btn btn-light" @onclick="() => CreateComponent()">Open Modal</button>
     </EditTemplate>
 </Part>
 
@@ -48,7 +58,7 @@
     private Modal Modal { get; set; }
     private PagingInfo PagingInfo { get; set; }
     private Transistor[] Items { get; set; }
-    private Transistor EditTransistor { get; set; } = new Transistor() { Name = "" };
+    private Transistor EditTransistor { get; set; }
 
     protected async Task LoadData(string uri)
     {
@@ -61,6 +71,7 @@
     {
         EditTransistor = new Transistor() 
         { 
+            Id=0,
             Name = "New transistor" 
         };
         Modal.Open();
@@ -74,7 +85,10 @@
 
     private async Task EditModalSave()
     {
-        //Save
+        if(EditTransistor.Id == 0)
+            await Http.PostAsJsonAsync("Transistor", EditTransistor);
+        else
+            await Http.PutAsJsonAsync("Transistor", EditTransistor);
         Modal.Close();
     }
 
@@ -83,5 +97,20 @@
         Modal.Close();
     }
 
+    private async Task EditModalDelete()
+    {
+        await Delete(EditTransistor.Id);
+        Modal.Close();
+    }
+
+    private async Task Delete(int id)
+    {
+        var queryParams = new Dictionary<string, string>
+        {
+            ["id"] = id.ToString()
+        };
+        var query = QueryHelpers.AddQueryString("Transistor", queryParams);
+        await Http.DeleteAsync(query);
+    }
 }
 

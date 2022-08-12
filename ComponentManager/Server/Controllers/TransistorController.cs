@@ -42,9 +42,49 @@ namespace ComponentManager.Server.Controllers
         }
 
 
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Transistor item)
+        {
+            if(ModelState.IsValid)
+            {
+                _context.Add(item);
+                await _context.SaveChangesAsync();
+                return Ok();                   
+            }
+            return BadRequest();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] Transistor item)
+        {
+            if (ModelState.IsValid)
+            {
+                Transistor dbItem = await _context.Transistors.FindAsync(item.Id);
+                if (dbItem != null)
+                {
+                    dbItem.Name = item.Name;
+                    dbItem.UMax = item.UMax;
+                    _context.Update(dbItem);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+            }
+            return BadRequest();
+        }
 
 
 
-
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            Transistor dbItem = await _context.Transistors.FindAsync(id);
+            if (dbItem != null)
+            {
+                _context.Remove(dbItem);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return NotFound();
+        }
     }
 }
