@@ -21,7 +21,21 @@
     </RowTemplate>
 
     <EditTemplate>
+        <Modal @ref="Modal">
+            <div class="modal-header">
+                @EditTransistor.Name;
+            </div>
+            <div class="modal-body">
+                <input @bind="EditTransistor.Name"/>
+                <input @bind="EditTransistor.UMax"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" @onclick="() => EditModalSave()">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => EditModalCancel()">Close</button>
+            </div>
+        </Modal>
 
+        <button type="button" class="btn btn-primary" @onclick="() => Modal.Open()">Open Modal</button>
 
     </EditTemplate>
 </Part>
@@ -29,15 +43,26 @@
 
 
 @code {
+    private Modal Modal { get; set; }
     private PagingInfo PagingInfo { get; set; }
     private Transistor[] Items { get; set; }
-
+    private Transistor EditTransistor { get; set; } = new Transistor();
 
     protected async Task LoadData(string uri)
     {
         var response = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
         PagingInfo = response;
         Items = response.Data;
+    }
+
+    private async Task EditModalSave()
+    {
+        Modal.Close();
+    }
+
+    private async Task EditModalCancel()
+    {
+        Modal.Close();
     }
 }
 
