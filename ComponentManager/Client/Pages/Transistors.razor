@@ -5,11 +5,15 @@
 
 <PageTitle>Transistors</PageTitle>
 
-<Part Uri="Transistor"
+<Part @ref="part"
+      Uri="Transistor"
       Title="Transistors"
       Paging="PagingInfo"
       Items="Items"
-      OnLoad=LoadData>
+      TItem="Transistor"
+      OnLoad=LoadData
+      OnSaveItem=SaveItem
+      OnDeleteItem=DeleteItem>
     
     <TableHeader Context="table">
         <th @onclick='()=>table.Sort("Name")'>Name</th>
@@ -20,97 +24,58 @@
     <RowTemplate Context="tor">
         <td>@tor.Name</td>
         <td>@tor.UMax</td>
-        <td><button type="button" class="btn btn-primary" @onclick="() => EditComponent(tor)">Edit</button></td>
+        <td><button type="button" class="btn btn-light" @onclick="() => part.EditComponent(tor)">Edit</button></td>
     </RowTemplate>
 
     <EditTemplate>
-        <Modal @ref="Modal">
-            <div class="modal-header">
-                @EditTransistor.Name
+        <div class="form-group">
+            <div class="row mb-3">
+                <div class="col-sm-3"><h6>Name</h6></div>
+                <div class="col-sm-9"><input class="form-control" @bind="context.Name" /></div>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <div class="row mb-3">
-                        <div class="col-sm-3"><h6>Name</h6></div>
-                        <div class="col-sm-9"><input class="form-control" @bind="EditTransistor.Name" /></div>
-                    </div>
-                </div>
-                 <div class="form-group">
-                    <div class="row mb-3">
-                        <div class="col-sm-3"><h6>U<sub>Max</sub></h6></div>
-                        <div class="col-sm-9"><input class="form-control" @bind="EditTransistor.UMax" /></div>
-                    </div>
-                </div>
+        </div>
+            <div class="form-group">
+            <div class="row mb-3">
+                <div class="col-sm-3"><h6>U<sub>Max</sub></h6></div>
+                <div class="col-sm-9"><input class="form-control" @bind="context.UMax" /></div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal" @onclick="() => EditModalDelete()">Delete</button>
-                <button type="button" class="btn btn-primary" @onclick="() => EditModalSave()">Save changes</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => EditModalCancel()">Close</button>
-            </div>
-        </Modal>
-        <button type="button" class="btn btn-light" @onclick="() => CreateComponent()">Open Modal</button>
+        </div>
     </EditTemplate>
 </Part>
 
 
 
 @code {
-    private Modal Modal { get; set; }
+    private Part<Transistor> part;
     private PagingInfo PagingInfo { get; set; }
     private Transistor[] Items { get; set; }
-    private Transistor EditTransistor { get; set; }
 
-    protected async Task LoadData(string uri)
+    private async Task LoadData(string uri)
     {
         var response = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
         PagingInfo = response;
         Items = response.Data;
     }
 
-    private async Task CreateComponent()
-    {
-        EditTransistor = new Transistor() 
-        { 
-            Id=0,
-            Name = "New transistor" 
-        };
-        Modal.Open();
-    }
 
-    private async Task EditComponent(Transistor tor)
+    private async Task SaveItem(Transistor tor)
     {
-        EditTransistor = tor;
-        Modal.Open();
-    }
-
-    private async Task EditModalSave()
-    {
-        if(EditTransistor.Id == 0)
-            await Http.PostAsJsonAsync("Transistor", EditTransistor);
+        if(tor.Id == 0)
+            await Http.PostAsJsonAsync("Transistor", tor);
         else
-            await Http.PutAsJsonAsync("Transistor", EditTransistor);
-        Modal.Close();
+            await Http.PutAsJsonAsync("Transistor", tor);
+
     }
 
-    private async Task EditModalCancel()
-    {
-        Modal.Close();
-    }
-
-    private async Task EditModalDelete()
-    {
-        await Delete(EditTransistor.Id);
-        Modal.Close();
-    }
-
-    private async Task Delete(int id)
+    private async Task DeleteItem(Transistor tor)
     {
         var queryParams = new Dictionary<string, string>
         {
-            ["id"] = id.ToString()
+            ["id"] = tor.Id.ToString()
         };
         var query = QueryHelpers.AddQueryString("Transistor", queryParams);
         await Http.DeleteAsync(query);
     }
+
 }
 

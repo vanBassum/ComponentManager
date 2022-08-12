@@ -44,7 +44,28 @@
 
 <div class ="row">
     <div class="col">
-        @EditTemplate
+
+        <Modal @ref="Modal">
+            <div class="modal-header">
+                @if(EditItem != null)
+                {
+                    @EditItem.ToString();
+                }
+            </div>
+            <div class="modal-body">
+                @if(EditTemplate != null)
+                {
+                    @EditTemplate(EditItem);
+                }
+                
+            </div>
+            <div class="modal-footer">
+                <p align="left"><button type="button" class="btn btn-danger" @onclick="() => EditModalDelete()">Delete</button></p>
+                <button type="button" class="btn btn-secondary" @onclick="() => EditModalCancel()">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="() => EditModalSave()">Save changes</button>
+            </div>
+        </Modal>
+        <button type="button" class="btn btn-light" @onclick="() => CreateComponent()">Open Modal</button>
     </div> 
     <div class="col">
         
@@ -79,12 +100,21 @@
     public RenderFragment<TItem>? RowTemplate { get; set; }
 
     [Parameter]
-    public RenderFragment? EditTemplate { get; set; }
+    public RenderFragment<TItem>? EditTemplate { get; set; }
 
     [Parameter, AllowNull]
     public IReadOnlyList<TItem> Items { get; set; }
 
+    [Parameter]
+    public EventCallback<TItem> OnSaveItem { get; set; }
 
+    [Parameter]
+    public EventCallback<TItem> OnDeleteItem { get; set; }
+
+
+
+    private TItem EditItem { get; set; } 
+    private Modal Modal { get; set; }
     private string search   = "";
     private int page        = 0;
     private int size        = 10;
@@ -144,10 +174,34 @@
         await OnLoad.InvokeAsync(await GetUri());
     }
 
+    private void CreateComponent()
+    {
+        EditItem = Activator.CreateInstance<TItem>();
+        Modal.Open();
+    }
 
+    public void EditComponent(TItem item)
+    {
+        EditItem = item;
+        Modal.Open();
+    }
 
+    private async Task EditModalSave()
+    {
+        await OnSaveItem.InvokeAsync(EditItem);
+        Modal.Close();
+    }
 
+    private void EditModalCancel()
+    {
+        Modal.Close();
+    }
 
+    private async Task EditModalDelete()
+    {
+        await OnDeleteItem.InvokeAsync(EditItem);
+        Modal.Close();
+    }
 }
 
 
