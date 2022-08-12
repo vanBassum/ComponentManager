@@ -1,16 +1,14 @@
 ﻿@page "/transistors"
 @using ComponentManager.Shared
 @inject HttpClient Http
-@inherits BasicTable
 
 <PageTitle>Transistors</PageTitle>
 
-<Part Title="Transistors"
+<Part @ref="child"
+      Uri="Transistor"
+      Title="Transistors"
       Paging=TransistorList
-      Search=Search
-      SearchChanged=Search
-      OnPageRequested=RequestPage
-      OnPageSizeRequested=RequestPageSize>
+      OnLoad=LoadData>
     
 
 @if (TransistorList == null)
@@ -22,8 +20,8 @@ else
     <table class="table table-striped" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th @onclick='()=>Sort("Name")'>Name</th>
-                <th @onclick='()=>Sort("UMax")'>U<sub>max</sub></th>
+                <th @onclick='()=>child.Sort("Name")'>Name</th>
+                <th @onclick='()=>child.Sort("UMax")'>U<sub>max</sub></th>
                 <th></th>
                 <th></th>
             </tr>
@@ -47,17 +45,12 @@ else
 
 
 @code {
-
+    private Part? child; 
     private PagingInfo<Transistor>? TransistorList { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadData();
-    }
 
-    protected async override Task LoadData()
+    protected async Task LoadData(string uri)
     {
-        var uri = await GetUri("Transistor");
         TransistorList = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
     }
 
