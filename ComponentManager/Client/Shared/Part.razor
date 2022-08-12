@@ -1,7 +1,11 @@
 ﻿@using ComponentManager.Shared
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Diagnostics.CodeAnalysis
+@typeparam TItem
+
 <div class ="row">
     <div class="col">
-        <input class="form-control justify-content-end search" type="text"  placeholder="Search" aria-label="Search" aria-describedby="Search"  @oninput="OnSearchChanged"/>
+        <input class="form-control justify-content-end search" type="text"  placeholder="Search" aria-label="Search" aria-describedby="Search"  @oninput="(a)=>Search(a.Value.ToString())"/>
     </div> 
     <div class="col">
         
@@ -13,15 +17,21 @@
 
 <div class ="row">
     <div class="container">
-        @if (ChildContent == null) 
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            @ChildContent
-        }
-        </div>
+        <table class="table table-striped" cellspacing="0" width="100%">
+            <thead>
+                <tr>@TableHeader(this)</tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    if (RowTemplate is not null)
+                    {
+                        <tr>@RowTemplate(item)</tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
@@ -34,8 +44,8 @@
     </div> 
     <div class="col">
         <Paging PagingInfo=Paging
-                OnPageRequested=OnPageRequested
-                OnPageSizeRequested=OnPageSizeRequested/>
+                OnPageRequested=RequestPage
+                OnPageSizeRequested=RequestPageSize/>
     </div> 
 </div>
 
@@ -47,28 +57,91 @@
     public string? Title { get; set; }
 
     [Parameter]
+    public string? Uri { get; set; }
+
+    [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
     public PagingInfo? Paging { get; set; }
 
     [Parameter]
-    public EventCallback<int> OnPageRequested { get; set; }
+    public EventCallback<string> OnLoad { get; set; }
 
     [Parameter]
-    public EventCallback<int> OnPageSizeRequested { get; set; }
+    public RenderFragment<Part<TItem>>? TableHeader { get; set; }
 
     [Parameter]
-    public string Search { get; set; } = "";
+    public RenderFragment<TItem>? RowTemplate { get; set; }
 
-    [Parameter]  
-    public EventCallback<string> SearchChanged { get; set; }  
+    [Parameter, AllowNull]
+    public IReadOnlyList<TItem> Items { get; set; }
 
-    private Task OnSearchChanged(ChangeEventArgs e)  
-    {  
-        Search = e?.Value?.ToString() ?? "";  
-        return SearchChanged.InvokeAsync(Search);  
+
+
+    private string search   = "";
+    private int page        = 0;
+    private int size        = 10;
+    private string sort     = "";
+    private bool desc       = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
     }
+
+    public async Task Sort(string value)  
+    {
+        if (sort == value)
+            desc = !desc;
+        sort = value;
+        page = 0;
+        await LoadData();
+    }
+
+    private async Task RequestPage(int page)
+    {
+        this.page = page;
+        await LoadData();
+    }
+
+    private async Task Search(string value)  
+    {
+        search = value;
+        page = 0;
+        await LoadData();
+    }
+
+    private async Task RequestPageSize(int size)
+    {
+        this.size = size;
+        await LoadData();
+    }
+
+    private async Task<string> GetUri()
+    {
+        var queryParams = new Dictionary<string, string>
+        {
+            ["page"] = page.ToString(),
+            ["size"] = size.ToString(),
+            ["sort"] = sort.ToString(),
+            ["desc"] = desc.ToString(),
+            ["filter"] = search
+        };
+        return QueryHelpers.AddQueryString(Uri, queryParams);
+    }
+
+
+    private async Task LoadData()
+    {
+        await OnLoad.InvokeAsync(await GetUri());
+    }
+
+
+
+
+
 }
 
 

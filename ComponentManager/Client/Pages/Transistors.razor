@@ -1,113 +1,39 @@
 ﻿@page "/transistors"
 @using ComponentManager.Shared
-@using System.Text.Json
-@using System.Text
-@using Microsoft.AspNetCore.WebUtilities
-@inject NavigationManager NavManager
 @inject HttpClient Http
 
 <PageTitle>Transistors</PageTitle>
 
-<Part Title="Transistors"
-      Paging=TransistorList
-      Search=Search
-      SearchChanged=OnSearch
-      OnPageRequested=RequestPage
-      OnPageSizeRequested=RequestPageSize>
+<Part Uri="Transistor"
+      Title="Transistors"
+      Paging="PagingInfo"
+      Items="Items"
+      OnLoad=LoadData>
     
+    <TableHeader Context="table">
+        <th @onclick='()=>table.Sort("Name")'>Name</th>
+        <th @onclick='()=>table.Sort("UMax")'>U<sub>max</sub></th>
+    </TableHeader>
 
-
-
-    
-@if (TransistorList == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table table-striped" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th @onclick='()=>OnSort("Name")'>Name</th>
-                <th @onclick='()=>OnSort("UMax")'>U<sub>max</sub></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in TransistorList.Data)
-            {
-                <tr>
-                    <td>@item.Name</td>
-                    <td>@item.UMax V</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    <RowTemplate Context="tor">
+        <td>@tor.Name</td>
+        <td>@tor.UMax</td>
+    </RowTemplate>
 
 </Part>
 
 
 
 @code {
+    private PagingInfo PagingInfo { get; set; }
+    private Transistor[] Items { get; set; }
 
-    private PagingInfo<Transistor>? TransistorList { get; set; }
 
-    private string Search { get; set; } = "";
-    private int Page { get; set; } = 0;
-    private int Size { get; set; } = 10;
-    private string Sort { get; set; } = "";
-    private bool Descending { get; set; } = false;
-
-    protected override async Task OnInitializedAsync()
+    protected async Task LoadData(string uri)
     {
-        await GetData();
+        var response = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
+        PagingInfo = response;
+        Items = response.Data;
     }
-
-    protected async Task RequestPage(int page)
-    {
-        Page = page;
-        await GetData();
-    }
-
-    private async Task OnSearch(string value)  
-    {
-        Search = value;
-        await GetData();
-    }
-
-    private async Task OnSort(string value)  
-    {
-        if (Sort == value)
-            Descending = !Descending;
-        Sort = value;
-        await GetData();
-    }
-
-
-    protected async Task RequestPageSize(int size)
-    {
-        Size = size;
-        await GetData();
-    }
-
-
-    private async Task GetData()  
-    {
-        var queryParams = new Dictionary<string, string>
-        {
-            ["page"] = Page.ToString(),
-            ["size"] = Size.ToString(),
-            ["sort"] = Sort.ToString(),
-            ["desc"] = Descending.ToString(),
-            ["filter"] = Search
-        };
-        var uri = QueryHelpers.AddQueryString("Transistor", queryParams);
-        TransistorList = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
-    }
-
 }
 
