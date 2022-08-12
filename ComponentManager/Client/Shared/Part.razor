@@ -1,5 +1,7 @@
 ﻿@using ComponentManager.Shared
 @using Microsoft.AspNetCore.WebUtilities
+@using System.Diagnostics.CodeAnalysis
+@typeparam TItem
 
 <div class ="row">
     <div class="col">
@@ -15,14 +17,20 @@
 
 <div class ="row">
     <div class="container">
-        @if (ChildContent == null) 
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            @ChildContent
-        }
+        <table class="table table-striped" cellspacing="0" width="100%">
+            <thead>
+                <tr>@TableHeader</tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    if (RowTemplate is not null)
+                    {
+                        <tr>@RowTemplate(item)</tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -59,6 +67,16 @@
 
     [Parameter]
     public EventCallback<string> OnLoad { get; set; }
+
+    [Parameter]
+    public RenderFragment? TableHeader { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem>? RowTemplate { get; set; }
+
+    [Parameter, AllowNull]
+    public IReadOnlyList<TItem> Items { get; set; }
+
 
 
     private string search   = "";

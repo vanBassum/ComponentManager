@@ -4,56 +4,36 @@
 
 <PageTitle>Transistors</PageTitle>
 
-<Part @ref="child"
-      Uri="Transistor"
+<Part Uri="Transistor"
       Title="Transistors"
-      Paging=TransistorList
+      Paging="PagingInfo"
+      Items="Items"
       OnLoad=LoadData>
     
+    <TableHeader>
+        <th>Name</th>
+        <th>U<sub>max</sub></th>
+    </TableHeader>
 
-@if (TransistorList == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table table-striped" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th @onclick='()=>child?.Sort("Name")'>Name</th>
-                <th @onclick='()=>child?.Sort("UMax")'>U<sub>max</sub></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in TransistorList.Data)
-            {
-                <tr>
-                    <td>@item.Name</td>
-                    <td>@item.UMax V</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    <RowTemplate>
+        <td>@context.Name</td>
+        <td>@context.UMax</td>
+    </RowTemplate>
 
 </Part>
 
 
 
 @code {
-    private Part? child; 
-    private PagingInfo<Transistor>? TransistorList { get; set; }
+    private PagingInfo PagingInfo { get; set; }
+    private Transistor[] Items { get; set; }
 
 
     protected async Task LoadData(string uri)
     {
-        TransistorList = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
+        var response = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
+        PagingInfo = response;
+        Items = response.Data;
     }
-
-
 }
 
