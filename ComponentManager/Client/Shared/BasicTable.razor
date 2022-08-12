@@ -1,0 +1,58 @@
+﻿@using ComponentManager.Shared
+@using Microsoft.AspNetCore.WebUtilities
+
+
+@code {
+    private string search   = "";
+    private int page        = 0;
+    private int size        = 10;
+    private string sort     = "";
+    private bool desc       = false;
+
+    protected async Task RequestPage(int page)
+    {
+        this.page = page;
+        await LoadData();
+    }
+
+    protected async Task Search(string value)  
+    {
+        search = value;
+        await LoadData();
+    }
+
+    protected async Task Sort(string value)  
+    {
+        if (sort == value)
+            desc = !desc;
+        sort = value;
+        await LoadData();
+    }
+
+    protected async Task RequestPageSize(int size)
+    {
+        this.size = size;
+        await LoadData();
+    }
+
+    protected async Task<string> GetUri(string baseUri)
+    {
+        var queryParams = new Dictionary<string, string>
+        {
+            ["page"] = page.ToString(),
+            ["size"] = size.ToString(),
+            ["sort"] = sort.ToString(),
+            ["desc"] = desc.ToString(),
+            ["filter"] = search
+        };
+        return QueryHelpers.AddQueryString(baseUri, queryParams);
+    }
+
+
+    protected virtual async Task LoadData()
+    {
+        throw new NotImplementedException();
+    }
+}
+
+
