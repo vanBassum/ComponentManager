@@ -1,6 +1,7 @@
 ﻿using ComponentManager.Server.Data;
 using ComponentManager.Shared;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace ComponentManager.Server.Controllers
 {
@@ -14,9 +15,16 @@ namespace ComponentManager.Server.Controllers
 
         protected abstract void CopyTo(T dst, T src);
 
-        protected abstract int GetKey(T item);
+        //https://stackoverflow.com/questions/30688909/how-to-get-primary-key-value-with-entity-framework-core
+        public virtual object? GetKey(T entity)
+        {
+            var keyName = _context.Model.FindEntityType(nameof(T)).FindPrimaryKey().Properties.Select(x => x.Name).Single();
+            return entity.GetType().GetProperty(keyName)?.GetValue(entity, null);
+        }
 
+        protected abstract IQueryable<T> Filter(IQueryable<T> data, string filter);
 
+        [HttpGet]
         public PagingInfo<T> Get(int? page, int? size, string? filter, string? sort, bool? desc)
         {
             page ??= 0;
@@ -24,7 +32,8 @@ namespace ComponentManager.Server.Controllers
 
             IQueryable<T> data = _context.Set<T>();
             if (filter != null)
-                data = data.Where(a => a.ToString().ToLower().Contains(filter.ToLower()));
+                data = Filter(data, filter);
+            
 
             if (sort != null)
                 data = data.OrderDynamic(sort, desc ?? false);
@@ -51,13 +60,17 @@ namespace ComponentManager.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                T dbItem = await _context.FindAsync<T>(GetKey(item));
-                if (dbItem != null)
+                object? key = GetKey(item);
+                if(key != null)
                 {
-                    CopyTo(dbItem, item);
-                    _context.Update(dbItem);
-                    await _context.SaveChangesAsync();
-                    return Ok();
+                    T dbItem = await _context.FindAsync<T>(key);
+                    if (dbItem != null)
+                    {
+                        CopyTo(dbItem, item);
+                        _context.Update(dbItem);
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
                 }
             }
             return BadRequest();

@@ -53,7 +53,7 @@
                 }
             </div>
             <div class="modal-body">
-                @if(EditTemplate != null)
+                @if(EditTemplate != null && EditItem != null)
                 {
                     @EditTemplate(EditItem);
                 }
@@ -174,7 +174,7 @@
         await OnLoad.InvokeAsync(await GetUri());
     }
 
-    private void CreateComponent()
+    private async Task CreateComponent()
     {
         EditItem = Activator.CreateInstance<TItem>();
         Modal.Open();
@@ -190,6 +190,7 @@
     {
         await OnSaveItem.InvokeAsync(EditItem);
         Modal.Close();
+        await LoadData();
     }
 
     private void EditModalCancel()
@@ -201,6 +202,7 @@
     {
         await OnDeleteItem.InvokeAsync(EditItem);
         Modal.Close();
+        await LoadData();
     }
 }
 

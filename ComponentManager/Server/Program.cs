@@ -1,4 +1,5 @@
 using ComponentManager.Server.Data;
+using ComponentManager.Shared;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,6 +47,15 @@ using (var scope = app.Services.CreateScope())
 
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
+
+
+    if(!db.Transistors.Any())
+    {
+        db.Transistors.AddRange(Transistor.Seed);
+        db.SaveChanges();
+    }
+
+
 }
 
 app.Run();

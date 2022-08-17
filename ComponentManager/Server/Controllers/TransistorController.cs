@@ -14,12 +14,17 @@ namespace ComponentManager.Server.Controllers
 
         }
 
-        protected override int GetKey(Transistor item) => item.Id;
+
 
         protected override void CopyTo(Transistor dst, Transistor src)
         {
             dst.Name = src.Name;
             dst.UMax = src.UMax;
+        }
+
+        protected override IQueryable<Transistor> Filter(IQueryable<Transistor> data, string filter)
+        {
+            return data.Where(a => a.Name.Contains(filter));
         }
     }
 }
