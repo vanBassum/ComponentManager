@@ -15,11 +15,13 @@ namespace ComponentManager.Server.Controllers
 
         protected abstract void CopyTo(T dst, T src);
 
-        //https://stackoverflow.com/questions/30688909/how-to-get-primary-key-value-with-entity-framework-core
-        public virtual object? GetKey(T entity)
+
+        public virtual object? GetKey(T item)
         {
-            var keyName = _context.Model.FindEntityType(nameof(T)).FindPrimaryKey().Properties.Select(x => x.Name).Single();
-            return entity.GetType().GetProperty(keyName)?.GetValue(entity, null);
+            //@TODO: Optimize!!!
+            var prop = item.GetType().GetProperties().Where(p => p.CustomAttributes.Any(a => a.AttributeType == typeof(System.ComponentModel.DataAnnotations.KeyAttribute))).FirstOrDefault();
+            var val = prop?.GetValue(item);
+            return val;
         }
 
         protected abstract IQueryable<T> Filter(IQueryable<T> data, string filter);

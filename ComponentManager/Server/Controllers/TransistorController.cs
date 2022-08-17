@@ -24,7 +24,7 @@ namespace ComponentManager.Server.Controllers
 
         protected override IQueryable<Transistor> Filter(IQueryable<Transistor> data, string filter)
         {
-            return data.Where(a => a.Name.Contains(filter));
+            return data.Where(a => a.Name.Contains(filter.First()));
         }
     }
 }

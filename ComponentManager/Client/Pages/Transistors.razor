@@ -8,12 +8,7 @@
 <Part @ref="part"
       Uri="Transistor"
       Title="Transistors"
-      Paging="PagingInfo"
-      Items="Items"
-      TItem="Transistor"
-      OnLoad=LoadData
-      OnSaveItem=SaveItem
-      OnDeleteItem=DeleteItem>
+      TItem="Transistor">
     
     <TableHeader Context="table">
         <th @onclick='()=>table.Sort("Name")'>Name</th>
@@ -47,35 +42,6 @@
 
 @code {
     private Part<Transistor> part;
-    private PagingInfo PagingInfo { get; set; }
-    private Transistor[] Items { get; set; }
-
-    private async Task LoadData(string uri)
-    {
-        var response = await Http.GetFromJsonAsync<PagingInfo<Transistor>>(uri);
-        PagingInfo = response;
-        Items = response.Data;
-    }
-
-
-    private async Task SaveItem(Transistor tor)
-    {
-        if(tor.Id == 0)
-            await Http.PostAsJsonAsync("Transistor", tor);
-        else
-            await Http.PutAsJsonAsync("Transistor", tor);
-
-    }
-
-    private async Task DeleteItem(Transistor tor)
-    {
-        var queryParams = new Dictionary<string, string>
-        {
-            ["id"] = tor.Id.ToString()
-        };
-        var query = QueryHelpers.AddQueryString("Transistor", queryParams);
-        await Http.DeleteAsync(query);
-    }
 
 }
 
